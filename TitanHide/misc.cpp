@@ -3,27 +3,24 @@
 
 ULONG Misc::GetProcessIDFromProcessHandle(HANDLE ProcessHandle)
 {
-    PROCESS_BASIC_INFORMATION PBI;
-    if(NT_SUCCESS(Undocumented::ZwQueryInformationProcess(ProcessHandle, ProcessBasicInformation, &PBI, sizeof(PBI), NULL)))
-        return (ULONG)PBI.UniqueProcessId;
-    else
-        return 0;
+    ULONG Pid = 0;
+    PEPROCESS Process;
+    if(NT_SUCCESS(ObReferenceObjectByHandle(ProcessHandle, 0, *PsProcessType, ExGetPreviousMode(), (PVOID*)&Process, nullptr)))
+    {
+        Pid = (ULONG)(ULONG_PTR)PsGetProcessId(Process);
+        ObDereferenceObject(Process);
+    }
+    return Pid;
 }
 
 ULONG Misc::GetProcessIDFromThreadHandle(HANDLE ThreadHandle)
 {
-    typedef struct _THREAD_BASIC_INFORMATION
+    ULONG Pid = 0;
+    PETHREAD Thread;
+    if(NT_SUCCESS(ObReferenceObjectByHandle(ThreadHandle, 0, *PsThreadType, ExGetPreviousMode(), (PVOID*)&Thread, nullptr)))
     {
-        NTSTATUS ExitStatus;
-        PVOID TebBaseAddress;
-        CLIENT_ID ClientId;
-        KAFFINITY AffinityMask;
-        KPRIORITY Priority;
-        KPRIORITY BasePriority;
-    } THREAD_BASIC_INFORMATION, *PTHREAD_BASIC_INFORMATION;
-    THREAD_BASIC_INFORMATION TBI;
-    if(NT_SUCCESS(Undocumented::ZwQueryInformationThread(ThreadHandle, ThreadBasicInformation, &TBI, sizeof(TBI), NULL)))
-        return (ULONG)(ULONG_PTR)TBI.ClientId.UniqueProcess;
-    else
-        return 0;
+        Pid = (ULONG)(ULONG_PTR)PsGetProcessId(PsGetThreadProcess(Thread));
+        ObDereferenceObject(Thread);
+    }
+    return Pid;
 }

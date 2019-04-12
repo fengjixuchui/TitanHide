@@ -1,4 +1,4 @@
-**Do not come here and open issues about problems with installation, crashes with bug check 0x109: CRITICAL_STRUCTURE_CORRUPTION or questions on how to disable PatchGuard. I will permanently ban you from the issue tracker. If you don't know how to properly install the tool you don't know enough to use it responsibly and you should use something else like [ScyllaHide](https://github.com/x64dbg/ScyllaHide). To disable PatchGuard, try [UPGDSED](https://github.com/hfiref0x/UPGDSED).**
+**Do not come here and open issues about problems with installation, crashes with bug check 0x109: CRITICAL_STRUCTURE_CORRUPTION or questions on how to disable PatchGuard. I will permanently ban you from the issue tracker. If you don't know how to properly install the tool you don't know enough to use it responsibly and you should use something else like [ScyllaHide](https://github.com/x64dbg/ScyllaHide). To disable PatchGuard, try [EfiGuard](https://github.com/Mattiwatti/EfiGuard) or [UPGDSED](https://github.com/hfiref0x/UPGDSED).**
 
 ## Latest build: [![Build status](https://ci.appveyor.com/api/projects/status/cb17ic9sxmccc74d?svg=true)](https://ci.appveyor.com/project/mrexodia/titanhide/build/artifacts)
 
@@ -14,18 +14,17 @@ TitanHide is a driver intended to hide debuggers from certain processes. The dri
 - DebugObject (NtQueryObject)
 - SystemKernelDebuggerInformation (NtQuerySystemInformation)
 - SystemDebugControl (NtSystemDebugControl)
-- NtClose (STATUS_INVALID_HANDLE exception)
+- NtClose (STATUS_INVALID_HANDLE/STATUS_HANDLE_NOT_CLOSABLE exceptions)
 - ThreadHideFromDebugger (NtSetInformationThread)
-- Protect DRx (HW BPs) (NtSetContextThread)
+- Protect DRx (HW BPs) (NtGetContextThread/NtSetContextThread)
 
 # Test environments
 
+- Windows 10 x64 & x86
 - Windows 8.1 x64 & x86
 - Windows 7 x64 & x86 (SP1)
 - Windows XP x86 (SP3)
 - Windows XP x64 (SP1)
-
-There is partial Windows 10 support. Hooking works, but finding the SSDT will currently fail. If you must run TitanHide on Windows 10, a workaround is to find the RVA of KeServiceDescriptorTable in ntoskrnl.exe and hardcode it in SSDTFind().
 
 # Compiling
 
@@ -57,10 +56,9 @@ To enable testsigning run the following command:
 bcdedit /set testsigning on
 ```
 
-To disable PatchGuard, find a tool like KPP Destroyer to disable it (Google is your friend). To check if TitanHide is working correctly, use [DebugView](https://technet.microsoft.com/en-us/sysinternals/debugview.aspx) or check `C:\TitanHide.log`. You can also try [UPGDSED](https://github.com/hfiref0x/UPGDSED).
+To disable PatchGuard, find a tool like KPP Destroyer to disable it (Google is your friend). To check if TitanHide is working correctly, use [DebugView](https://technet.microsoft.com/en-us/sysinternals/debugview.aspx) or check `C:\TitanHide.log`. You can also try [EfiGuard](https://github.com/Mattiwatti/EfiGuard) or [UPGDSED](https://github.com/hfiref0x/UPGDSED).
 
 # Remarks
 
 - When using x64dbg, you can use the TitanHide plugin (available on the download page).
-- When using EsetNod32 AV, disable "Realtime File Protection", to prevent a BSOD when starting TitanHide. You can re-enable it right afterwards.
 - **NEVER RUN THIS DRIVER ON A PRODUCTION SYSTEM, ALWAYS USE A VM!**
